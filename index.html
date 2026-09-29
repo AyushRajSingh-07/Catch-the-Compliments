@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#FFDDE4" />
+  <title>Catch the Compliments 💖 Birthday Edition</title>
+  <style>
+    /* ==========================================================================
+       🌸 ROMANTIC & SOFT MOBILE-FIRST STYLES
+       ========================================================================== */
+    :root {
+      --bg-gradient-top: #FFE8EE;
+      --bg-gradient-mid: #FFF2F4;
+      --bg-gradient-bottom: #FFF8FA;
+      --accent-pink: #FF6584;
+      --accent-rose: #E74C6F;
+      --accent-gold: #F6BD60;
+      --accent-glow: rgba(255, 101, 132, 0.35);
+      --card-bg: rgba(255, 255, 255, 0.92);
+      --card-border: rgba(255, 200, 215, 0.7);
+      --text-main: #4A3036;
+      --text-muted: #8C6A72;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Caveat", "Dancing Script", "Comic Sans MS", cursive, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      position: fixed;
+      touch-action: none;
+      overscroll-behavior: none;
+      font-family: var(--font-family);
+      color: var(--text-main);
+      background: linear-gradient(180deg, var(--bg-gradient-top) 0%, var(--bg-gradient-mid) 45%, var(--bg-gradient-bottom) 100%);
+    }
+
+    #gameContainer {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Ambient soft background shimmer */
+    .ambient-glow {
+      position: absolute;
+      top: -10%;
+      left: 15%;
+      width: 70vw;
+      height: 70vw;
+      max-width: 450px;
+      max-height: 450px;
+      background: radial-gradient(circle, rgba(255, 182, 193, 0.45) 0%, rgba(255, 255, 255, 0) 70%);
+      border-radius: 50%;
+      filter: blur(45px);
+      pointer-events: none;
+      z-index: 1;
+      animation: pulseGlow 7s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      0% { transform: scale(0.9) translate(-10px, 0); opacity: 0.6; }
+      100% { transform: scale(1.15) translate(15px, 20px); opacity: 0.95; }
+    }
+
+    /* Game Canvas */
+    #gameCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      z-index: 2;
+      touch-action: none;
+    }
+
+    /* Top HUD / Header */
+    #hud {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: env(safe-area-inset-top, 14px) 16px 8px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .hud-badge {
+      pointer-events: auto;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 8px 16px;
+      border-radius: 22px;
+      font-size: 14.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      box-shadow: 0 4px 16px rgba(231, 76, 111, 0.1);
+      color: var(--accent-rose);
+      letter-spacing: 0.2px;
+    }
+
+    .hud-badge span.icon {
+      font-size: 18px;
+      display: inline-block;
+      animation: gentleBeat 1.8s ease-in-out infinite;
+    }
+
+    @keyframes gentleBeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+
+    /* Interactive Buttons */
+    .hud-btn {
+      pointer-events: auto;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(231, 76, 111, 0.12);
+      transition: transform 0.15s ease, background 0.15s;
+    }
+
+    .hud-btn:active {
+      transform: scale(0.9);
+      background: #FFE3EA;
+    }
+
+    /* Progress bar below HUD */
+    #progressWrapper {
+      position: absolute;
+      top: calc(env(safe-area-inset-top, 14px) + 54px);
+      left: 16px;
+      right: 16px;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.65);
+      border-radius: 8px;
+      overflow: hidden;
+      z-index: 10;
+      border: 1px solid rgba(255, 205, 218, 0.6);
+      box-shadow: 0 2px 6px rgba(255, 101, 132, 0.08);
+      pointer-events: none;
+    }
+
+    #progressBar {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #FF9A9E 0%, #F6BD60 50%, #FF6584 100%);
+      border-radius: 8px;
+      transition: width 0.25s linear;
+    }
+
+    /* Compliment Display Card (Floating Toast) */
+    #complimentToast {
+      position: absolute;
+      top: calc(env(safe-area-inset-top, 14px) + 72px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px) scale(0.94);
+      width: calc(100% - 32px);
+      max-width: 440px;
+      background: var(--card-bg);
+      border: 1.5px solid var(--accent-pink);
+      border-radius: 20px;
+      padding: 14px 20px;
+      text-align: center;
+      box-shadow: 0 10px 30px var(--accent-glow), 0 4px 12px rgba(255, 255, 255, 0.8) inset;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 15;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    #complimentToast.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0) scale(1);
+    }
+
+    #complimentToast .toast-label {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--accent-pink);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    #complimentToast .toast-text {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.38;
+      color: var(--text-main);
+    }
+
+    /* Helper drag hint */
+    #dragHint {
+      position: absolute;
+      bottom: calc(env(safe-area-inset-bottom, 12px) + 95px);
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.82);
+      padding: 7px 18px;
+      border-radius: 18px;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 215, 225, 0.8);
+      box-shadow: 0 4px 14px rgba(231, 76, 111, 0.08);
+      pointer-events: none;
+      z-index: 8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      opacity: 0.9;
+      animation: floatHint 2.4s ease-in-out infinite;
+      transition: opacity 0.5s ease;
+    }
+
+    @keyframes floatHint {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-6px); }
+    }
+
+    /* Modal Screens: Start & Birthday Ending */
+    .modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(74, 48, 54, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 400px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: #FFFFFF;
+      border-radius: 28px;
+      padding: 28px 24px;
+      text-align: center;
+      box-shadow: 0 20px 45px rgba(231, 76, 111, 0.22), 0 0 0 1.5px rgba(255, 205, 218, 0.8);
+      transform: translateY(20px) scale(0.92);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: translateY(0) scale(1);
+    }
+
+    /* Start Screen Elements */
+    .start-icon-wrap {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FFE5EC 0%, #FFCAD4 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+      box-shadow: 0 10px 22px rgba(255, 101, 132, 0.25);
+      animation: heartbeat 2s infinite ease-in-out;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      14% { transform: scale(1.12); }
+      28% { transform: scale(1); }
+      42% { transform: scale(1.12); }
+      70% { transform: scale(1); }
+    }
+
+    .modal-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--accent-rose);
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
+
+    .modal-subtitle {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-bottom: 22px;
+    }
+
+    .game-instructions {
+      background: #FFF5F7;
+      border: 1px dashed #FFCCD7;
+      border-radius: 18px;
+      padding: 14px 16px;
+      text-align: left;
+      margin-bottom: 24px;
+      font-size: 13.5px;
+      color: #63474E;
+      line-height: 1.5;
+    }
+
+    .game-instructions li {
+      margin-left: 20px;
+      margin-bottom: 6px;
+    }
+    .game-instructions li:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Big Action Buttons */
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, #FF6584 0%, #F04B72 100%);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 20px;
+      padding: 16px 24px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(240, 75, 114, 0.38);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.96);
+      box-shadow: 0 4px 14px rgba(240, 75, 114, 0.3);
+    }
+
+    /* Birthday Ending Screen Custom Styling */
+    .bday-cake {
+      font-size: 54px;
+      margin-bottom: 12px;
+      display: inline-block;
+      animation: gentleWobble 2.5s ease-in-out infinite;
+    }
+
+    @keyframes gentleWobble {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-6deg); }
+      75% { transform: rotate(6deg); }
+    }
+
+    .ending-letter-box {
+      background: linear-gradient(180deg, #FFF9FA 0%, #FFF3F5 100%);
+      border: 1.5px solid #FFCAD4;
+      border-radius: 20px;
+      padding: 18px;
+      margin: 16px 0;
+      text-align: left;
+      position: relative;
+    }
+
+    .ending-letter-text {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #4A3036;
+      white-space: pre-line;
+      font-style: italic;
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .stat-pill {
+      background: #FFE8EE;
+      color: var(--accent-rose);
+      font-size: 13.5px;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Compliments Review Accordion */
+    .accordion-toggle {
+      background: transparent;
+      border: none;
+      color: var(--accent-rose);
+      font-size: 14px;
+      font-weight: 700;
+      padding: 8px;
+      margin-bottom: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .caught-list {
+      max-height: 150px;
+      overflow-y: auto;
+      text-align: left;
+      background: #FAFAFA;
+      border-radius: 14px;
+      padding: 10px 14px;
+      margin-bottom: 18px;
+      display: none;
+      border: 1px solid #ECECEC;
+    }
+
+    .caught-list.open {
+      display: block;
+    }
+
+    .caught-item {
+      font-size: 13px;
+      color: #555;
+      padding: 6px 0;
+      border-bottom: 1px solid #F0F0F0;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      line-height: 1.4;
+    }
+    .caught-item:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="gameContainer">
+    <div class="ambient-glow"></div>
+
+    <!-- HUD Header -->
+    <header id="hud">
+      <div class="hud-badge" id="scoreBadge">
+        <span class="icon">💖</span>
+        <span id="scoreText">0 Caught</span>
+      </div>
+
+      <div style="display: flex; gap: 8px;">
+        <button class="hud-btn" id="soundBtn" title="Toggle Sound" aria-label="Toggle Sound">
+          <span id="soundIcon">🔊</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Progress countdown line -->
+    <div id="progressWrapper">
+      <div id="progressBar"></div>
+    </div>
+
+    <!-- Live Floating Compliment Toast -->
+    <div id="complimentToast">
+      <div class="toast-label">
+        <span>✨ Reason I Love You ✨</span>
+      </div>
+      <div class="toast-text" id="toastMessage">Catch a heart to begin!</div>
+    </div>
+
+    <!-- Drag Instructions Hint -->
+    <div id="dragHint">
+      <span>👈 Drag basket anywhere to move 👉</span>
+    </div>
+
+    <!-- HTML5 Canvas for fast, crisp graphics -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Welcome / Start Modal -->
+    <div class="modal-overlay active" id="startModal">
+      <div class="modal-card">
+        <div class="start-icon-wrap">🧺</div>
+        <h1 class="modal-title" id="startTitle">Catch the Compliments</h1>
+        <p class="modal-subtitle" id="startSubtitle">A sweet birthday love catcher made just for you!</p>
+
+        <div class="game-instructions">
+          <ul>
+            <li>Drag the cute basket across the screen to catch falling hearts & love notes.</li>
+            <li>Each catch reveals a special reason I adore you.</li>
+            <li>No stress and zero penalties for missed items — just relax and enjoy!</li>
+          </ul>
+        </div>
+
+        <button class="btn-primary" id="startBtn">
+          <span>Start Catching</span>
+          <span>💖</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Birthday Celebration Ending Modal -->
+    <div class="modal-overlay" id="endModal">
+      <div class="modal-card">
+        <div class="bday-cake">🎂</div>
+        <h1 class="modal-title" id="endTitle">Happy Birthday!</h1>
+
+        <div class="stats-row">
+          <div class="stat-pill">
+            <span>💌</span>
+            <span id="finalScoreText">12 Compliments Caught</span>
+          </div>
+        </div>
+
+        <div class="ending-letter-box">
+          <div class="ending-letter-text" id="endLetterText">
+            You bring so much sunshine and happiness into my life. May this birthday be as sweet, warm, and unforgettable as you are! 💖
+          </div>
+        </div>
+
+        <button class="accordion-toggle" id="toggleListBtn">
+          <span>📜 View all caught love notes</span>
+          <span id="accordionArrow">▼</span>
+        </button>
+        <div class="caught-list" id="caughtListContainer"></div>
+
+        <button class="btn-primary" id="restartBtn">
+          <span>Play Again</span>
+          <span>✨</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       ❤️ BIRTHDAY GIRL PERSONALIZATION SECTION ❤️
+       Edit these details to customize the game for her special day!
+       ========================================================================== */
+    const CONFIG = {
+      // 1. Her Name (used in titles and messages)
+      herName: "Vrishti a.k.a My love",
+
+      // 2. Main title shown on the start screen
+      gameTitle: "Catch the Compliments",
+      startSubtitle: "A special birthday love catcher made with love for you! 💖",
+
+      // 3. Birthday Finale Message
+      birthdayHeading: "Happy Birthday, My Love! 🎂✨",
+      endingLetter: `Every moment with you is a gift that I cherish deeply.
+Thank you for bringing so much brightness, laughter, and kindness into my life.
+
+May this year ahead bring you all the endless joy, peace, and beautiful dreams you so richly deserve.
+
+I love you always and forever! 💖🥂🎉`,
+
+      // 4. Game Duration in seconds (~60s as requested)
+      gameDurationSeconds: 60,
+
+      // 5. Compliments and reasons you love her:
+      // (Feel free to add, remove, or personalize any of these!)
+      compliments: [
+        "Your smile lights up my whole world ✨",
+        "How deeply and genuinely you care for everyone around you 🌸",
+        "Your laugh is my absolute favorite sound in the universe 🎶",
+        "The way you make ordinary moments feel like pure magic 🪄",
+        "Your brilliance, ambition, and creative mind 💡",
+        "The warmth of your hugs that always feels like coming home 🏡",
+        "How cute you look when you get excited about little things 🧸",
+        "You inspire me to be a better person every single day 🌟",
+        "Your wonderful, playful, and contagious sense of humor 😂",
+        "The comforting peace and safety I feel whenever you are near 🕊️",
+        "How stunning you look, especially when you think no one is watching 🌹",
+        "Your thoughtful little gestures that mean the world to me 💌",
+        "The kindness in your heart that touches everyone you meet 💫",
+        "How passionate and determined you are when chasing your dreams 🚀",
+        "Your soft hand holding mine makes everything feel alright 🤝",
+        "The cute little happy dances you do when good food arrives 🧁",
+        "You understand me like no one else ever could 💭",
+        "How gentle and compassionate you are 🌷",
+        "Your sense of adventure and curiosity about life 🗺️",
+        "You are my favorite notification every single morning 📱💖",
+        "The way your eyes crinkle when you burst out laughing 👀✨",
+        "How resilient, graceful, and strong you are in every season 🌿",
+        "You make every single day brighter just by being you ☀️",
+        "The endless patience and grace you always give to others 🤍",
+        "You are truly my best friend, my soulmate, and my home 💫"
+      ]
+    };
+
+    /* ==========================================================================
+       🎵 PROCEDURAL WEB AUDIO SYNTHESIZER (No external audio files needed)
+       ========================================================================== */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.muted = false;
+        // Pentatonic joyful frequencies for chime-like harp notes (C5, D5, E5, G5, A5, C6)
+        this.notes = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50];
+        this.lastNoteIdx = 0;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            this.ctx = new AudioContext();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      playCatchSound() {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        this.lastNoteIdx = (this.lastNoteIdx + 1) % this.notes.length;
+        const freq1 = this.notes[this.lastNoteIdx];
+        const freq2 = freq1 * 1.5; // Harmonic fifth
+
+        [freq1, freq2].forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = i === 0 ? 'sine' : 'triangle';
+          osc.frequency.setValueAtTime(freq, now + i * 0.04);
+
+          gain.gain.setValueAtTime(0.001, now + i * 0.04);
+          gain.gain.exponentialRampToValueAtTime(0.18 / (i + 1), now + i * 0.04 + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.04 + 0.35);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now + i * 0.04);
+          osc.stop(now + i * 0.04 + 0.38);
+        });
+      }
+
+      playFanfare() {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const chords = [523.25, 659.25, 783.99, 1046.50]; // C Major arpeggio
+        chords.forEach((freq, idx) => {
+          setTimeout(() => {
+            if (!this.ctx) return;
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now);
+
+            gain.gain.setValueAtTime(0.001, now);
+            gain.gain.exponentialRampToValueAtTime(0.2, now + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.7);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+
+            osc.start(now);
+            osc.stop(now + 0.75);
+          }, idx * 120);
+        });
+      }
+    }
+
+    /* ==========================================================================
+       🎮 MAIN GAME ENGINE
+       ========================================================================== */
+    class Game {
+      constructor() {
+        this.canvas = document.getElementById('gameCanvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.sound = new SoundEngine();
+
+        // UI references
+        this.scoreBadge = document.getElementById('scoreText');
+        this.progressBar = document.getElementById('progressBar');
+        this.complimentToast = document.getElementById('complimentToast');
+        this.toastMessage = document.getElementById('toastMessage');
+        this.dragHint = document.getElementById('dragHint');
+        this.startModal = document.getElementById('startModal');
+        this.endModal = document.getElementById('endModal');
+        this.soundBtn = document.getElementById('soundBtn');
+        this.soundIcon = document.getElementById('soundIcon');
+        this.caughtListContainer = document.getElementById('caughtListContainer');
+        this.toggleListBtn = document.getElementById('toggleListBtn');
+        this.accordionArrow = document.getElementById('accordionArrow');
+
+        // State variables
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
+        this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+        this.isPlaying = false;
+        this.isGameOver = false;
+        this.score = 0;
+        this.timeRemaining = CONFIG.gameDurationSeconds;
+        this.toastTimer = null;
+
+        // Caught compliment history
+        this.caughtCompliments = [];
+        this.availableCompliments = [...CONFIG.compliments];
+
+        // Basket Player state
+        this.basket = {
+          x: this.width / 2,
+          y: this.height - 75,
+          width: Math.min(105, this.width * 0.28),
+          height: 52,
+          targetX: this.width / 2,
+          bounceScaleY: 1,
+          bounceScaleX: 1,
+          tilt: 0
+        };
+
+        // Active game objects
+        this.items = [];
+        this.particles = [];
+        this.confetti = [];
+        this.backgroundFloaters = [];
+
+        // Input state
+        this.keys = { left: false, right: false };
+
+        // Timing
+        this.lastTime = performance.now();
+        this.spawnTimer = 0;
+        this.spawnInterval = 900; // ms
+
+        this.initDOM();
+        this.initCanvasSize();
+        this.initBackgroundFloaters();
+        this.bindEvents();
+
+        // Start render loop immediately for ambient background visual
+        requestAnimationFrame((t) => this.loop(t));
+      }
+
+      initDOM() {
+        if (CONFIG.herName) {
+          document.getElementById('startTitle').textContent = `For ${CONFIG.herName} 💖`;
+          document.getElementById('endTitle').textContent = `Happy Birthday, ${CONFIG.herName}! 🎂`;
+        }
+        if (CONFIG.startSubtitle) {
+          document.getElementById('startSubtitle').textContent = CONFIG.startSubtitle;
+        }
+        if (CONFIG.endingLetter) {
+          document.getElementById('endLetterText').textContent = CONFIG.endingLetter;
+        }
+      }
+
+      initCanvasSize() {
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
+        this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+        this.canvas.width = Math.floor(this.width * this.dpr);
+        this.canvas.height = Math.floor(this.height * this.dpr);
+
+        this.ctx.resetTransform?.();
+        this.ctx.scale(this.dpr, this.dpr);
+
+        // Adjust basket dimensions proportionally
+        this.basket.width = Math.min(110, Math.max(85, this.width * 0.26));
+        this.basket.height = this.basket.width * 0.52;
+        this.basket.y = this.height - Math.max(75, envSafeAreaBottom() + 65);
+        this.basket.targetX = Math.min(Math.max(this.basket.targetX, this.basket.width / 2), this.width - this.basket.width / 2);
+      }
+
+      initBackgroundFloaters() {
+        this.backgroundFloaters = [];
+        const count = 16;
+        for (let i = 0; i < count; i++) {
+          this.backgroundFloaters.push({
+            x: Math.random() * this.width,
+            y: Math.random() * this.height,
+            size: 6 + Math.random() * 12,
+            speedY: 0.25 + Math.random() * 0.45,
+            opacity: 0.15 + Math.random() * 0.22,
+            sway: Math.random() * Math.PI * 2,
+            swaySpeed: 0.015 + Math.random() * 0.02,
+            type: Math.random() > 0.5 ? 'heart' : 'sparkle'
+          });
+        }
+      }
+
+      bindEvents() {
+        window.addEventListener('resize', () => this.initCanvasSize());
+        window.addEventListener('orientationchange', () => {
+          setTimeout(() => this.initCanvasSize(), 200);
+        });
+
+        // Polyfill roundRect for older mobile browsers
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+          CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r = 0) {
+            if (w < 2 * r) r = w / 2;
+            if (h < 2 * r) r = h / 2;
+            this.beginPath();
+            this.moveTo(x + r, y);
+            this.arcTo(x + w, y, x + w, y + h, r);
+            this.arcTo(x + w, y + h, x, y + h, r);
+            this.arcTo(x, y + h, x, y, r);
+            this.arcTo(x, y, x + w, y, r);
+            this.closePath();
+            return this;
+          };
+        }
+
+        // Touch Input: Dragging finger ANYWHERE across the screen moves the basket horizontally
+        const handleTouchMove = (e) => {
+          if (!this.isPlaying) return;
+          if (e.target.closest('button, .modal-card')) return;
+          e.preventDefault(); // Prevents page scrolling/pinch
+          if (e.touches.length > 0) {
+            this.basket.targetX = e.touches[0].clientX;
+            if (this.dragHint) {
+              this.dragHint.style.opacity = '0';
+            }
+          }
+        };
+
+        const handleTouchStart = (e) => {
+          if (!this.isPlaying) return;
+          if (e.target.closest('button, .modal-card')) return;
+          this.sound.init(); // Warm up Web Audio
+          if (e.touches.length > 0) {
+            this.basket.targetX = e.touches[0].clientX;
+            if (this.dragHint) {
+              this.dragHint.style.opacity = '0';
+            }
+          }
+        };
+
+        window.addEventListener('touchstart', handleTouchStart, { passive: false });
+        window.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+        // Mouse Drag / Move Support for Desktop
+        let isMouseDown = false;
+        window.addEventListener('mousedown', (e) => {
+          if (e.target.closest('button, .modal-card')) return;
+          isMouseDown = true;
+          this.basket.targetX = e.clientX;
+          if (this.dragHint) this.dragHint.style.opacity = '0';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+          if (isMouseDown || this.isPlaying) {
+            this.basket.targetX = e.clientX;
+            if (this.dragHint) this.dragHint.style.opacity = '0';
+          }
+        });
+
+        window.addEventListener('mouseup', () => {
+          isMouseDown = false;
+        });
+
+        // Desktop Keyboard Controls: Left / Right arrows, A / D
+        window.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+            this.keys.left = true;
+            if (this.dragHint) this.dragHint.style.opacity = '0';
+          } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+            this.keys.right = true;
+            if (this.dragHint) this.dragHint.style.opacity = '0';
+          }
+        });
+
+        window.addEventListener('keyup', (e) => {
+          if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+            this.keys.left = false;
+          } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+            this.keys.right = false;
+          }
+        });
+
+        // Start button
+        document.getElementById('startBtn').addEventListener('click', () => {
+          this.sound.init();
+          this.startGame();
+        });
+
+        // Restart button
+        document.getElementById('restartBtn').addEventListener('click', () => {
+          this.sound.init();
+          this.startGame();
+        });
+
+        // Mute toggle
+        this.soundBtn.addEventListener('click', () => {
+          this.sound.muted = !this.sound.muted;
+          this.soundIcon.textContent = this.sound.muted ? '🔇' : '🔊';
+        });
+
+        // Accordion for caught compliments list
+        this.toggleListBtn.addEventListener('click', () => {
+          const isOpen = this.caughtListContainer.classList.toggle('open');
+          this.accordionArrow.textContent = isOpen ? '▲' : '▼';
+        });
+      }
+
+      startGame() {
+        this.startModal.classList.remove('active');
+        this.endModal.classList.remove('active');
+        this.caughtListContainer.classList.remove('open');
+        this.accordionArrow.textContent = '▼';
+
+        this.isPlaying = true;
+        this.isGameOver = false;
+        this.score = 0;
+        this.timeRemaining = CONFIG.gameDurationSeconds;
+        this.items = [];
+        this.particles = [];
+        this.confetti = [];
+        this.caughtCompliments = [];
+        this.availableCompliments = [...CONFIG.compliments];
+
+        this.updateHUD();
+        this.progressBar.style.width = '100%';
+        this.showToast("Catch the love falling from the sky! 💖", 2200);
+
+        // Reset basket position to center
+        this.basket.x = this.width / 2;
+        this.basket.targetX = this.width / 2;
+        this.basket.tilt = 0;
+
+        if (this.dragHint) {
+          this.dragHint.style.opacity = '0.9';
+        }
+      }
+
+      endGame() {
+        this.isPlaying = false;
+        this.isGameOver = true;
+
+        // Fanfare & Confetti celebration
+        this.sound.playFanfare();
+        this.spawnCelebrationConfetti();
+
+        // Fill ending modal info
+        const caughtCount = this.caughtCompliments.length;
+        document.getElementById('finalScoreText').textContent = `${caughtCount} Reason${caughtCount === 1 ? '' : 's'} Caught`;
+
+        // Populate caught items list
+        this.caughtListContainer.innerHTML = '';
+        if (this.caughtCompliments.length === 0) {
+          this.caughtListContainer.innerHTML = '<div class="caught-item">Every single heart was meant for you anyway! 💖</div>';
+        } else {
+          this.caughtCompliments.forEach((comp) => {
+            const item = document.createElement('div');
+            item.className = 'caught-item';
+            item.innerHTML = `<span>💌</span> <span>${escapeHTML(comp)}</span>`;
+            this.caughtListContainer.appendChild(item);
+          });
+        }
+
+        setTimeout(() => {
+          this.endModal.classList.add('active');
+        }, 600);
+      }
+
+      showToast(text, duration = 3400) {
+        if (this.toastTimer) clearTimeout(this.toastTimer);
+        this.toastMessage.textContent = text;
+        this.complimentToast.classList.add('visible');
+
+        this.toastTimer = setTimeout(() => {
+          this.complimentToast.classList.remove('visible');
+        }, duration);
+      }
+
+      updateHUD() {
+        this.scoreBadge.textContent = `${this.score} Caught`;
+        const pct = Math.max(0, (this.timeRemaining / CONFIG.gameDurationSeconds) * 100);
+        this.progressBar.style.width = `${pct}%`;
+      }
+
+      spawnItem() {
+        const types = ['heart_ruby', 'heart_pink', 'envelope', 'star'];
+        const type = types[Math.floor(Math.random() * types.length)];
+
+        const margin = 35;
+        const x = margin + Math.random() * (this.width - margin * 2);
+
+        this.items.push({
+          x: x,
+          y: -40,
+          type: type,
+          size: type === 'envelope' ? 34 : 30,
+          speedY: 1.8 + Math.random() * 1.4, // Gentle, relaxing fall speed
+          swayOffset: Math.random() * Math.PI * 2,
+          swayAmplitude: 1.2 + Math.random() * 1.5,
+          rotation: (Math.random() - 0.5) * 0.4,
+          rotSpeed: (Math.random() - 0.5) * 0.03,
+          isCaught: false,
+          alpha: 1.0
+        });
+      }
+
+      spawnParticles(x, y, color) {
+        const count = 18;
+        for (let i = 0; i < count; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 1.8 + Math.random() * 3.8;
+          this.particles.push({
+            x: x,
+            y: y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed - 1.2,
+            size: 3 + Math.random() * 6,
+            color: color || '#FF6584',
+            alpha: 1.0,
+            decay: 0.02 + Math.random() * 0.025,
+            isHeart: Math.random() > 0.4
+          });
+        }
+      }
+
+      spawnCelebrationConfetti() {
+        const colors = ['#FF6584', '#F6BD60', '#FFCAD4', '#99E2B4', '#B5E2FA', '#F3C68F', '#FF85A1'];
+        for (let i = 0; i < 90; i++) {
+          this.confetti.push({
+            x: Math.random() * this.width,
+            y: -20 - Math.random() * (this.height * 0.6),
+            w: 8 + Math.random() * 8,
+            h: 12 + Math.random() * 10,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            vx: (Math.random() - 0.5) * 2.5,
+            vy: 2.2 + Math.random() * 3.5,
+            rot: Math.random() * Math.PI * 2,
+            rotSpeed: (Math.random() - 0.5) * 0.1,
+            sway: Math.random() * Math.PI * 2
+          });
+        }
+      }
+
+      onCatchItem(item) {
+        this.score++;
+        this.sound.playCatchSound();
+
+        // Basket squash & stretch bounce feedback
+        this.basket.bounceScaleY = 0.8;
+        this.basket.bounceScaleX = 1.22;
+
+        // Particle sparkle burst
+        const particleColor = item.type === 'envelope' ? '#F6BD60' : '#FF6584';
+        this.spawnParticles(item.x, this.basket.y + 10, particleColor);
+
+        // Pick next compliment (cycle without repeats until all shown)
+        if (this.availableCompliments.length === 0) {
+          this.availableCompliments = [...CONFIG.compliments];
+        }
+        const randomIndex = Math.floor(Math.random() * this.availableCompliments.length);
+        const compliment = this.availableCompliments.splice(randomIndex, 1)[0];
+
+        this.caughtCompliments.push(compliment);
+        this.showToast(compliment);
+        this.updateHUD();
+      }
+
+      update(dt) {
+        // Handle desktop keyboard arrow keys
+        if (this.keys.left) {
+          this.basket.targetX -= 550 * dt;
+        }
+        if (this.keys.right) {
+          this.basket.targetX += 550 * dt;
+        }
+
+        // Clamp basket target inside screen bounds
+        const halfWidth = this.basket.width / 2;
+        this.basket.targetX = Math.max(halfWidth, Math.min(this.width - halfWidth, this.basket.targetX));
+
+        // Smooth basket interpolation (lerp for fluid responsiveness)
+        const prevX = this.basket.x;
+        this.basket.x += (this.basket.targetX - this.basket.x) * Math.min(1, 16 * dt);
+        const deltaX = this.basket.x - prevX;
+
+        // Tilt basket slightly based on horizontal movement
+        const targetTilt = Math.max(-0.2, Math.min(0.2, deltaX * 0.02));
+        this.basket.tilt += (targetTilt - this.basket.tilt) * 0.2;
+
+        // Restore basket squash & stretch
+        this.basket.bounceScaleX += (1 - this.basket.bounceScaleX) * 0.15;
+        this.basket.bounceScaleY += (1 - this.basket.bounceScaleY) * 0.15;
+
+        // Timer countdown
+        if (this.isPlaying) {
+          this.timeRemaining -= dt;
+          if (this.timeRemaining <= 0) {
+            this.timeRemaining = 0;
+            this.updateHUD();
+            this.endGame();
+            return;
+          }
+          this.updateHUD();
+
+          // Spawning items
+          this.spawnTimer += dt * 1000;
+          if (this.spawnTimer >= this.spawnInterval) {
+            this.spawnTimer = 0;
+            this.spawnItem();
+            this.spawnInterval = 750 + Math.random() * 450;
+          }
+        }
+
+        // Update Falling Items
+        for (let i = this.items.length - 1; i >= 0; i--) {
+          const item = this.items[i];
+          item.y += item.speedY;
+          item.swayOffset += 0.04;
+          item.x += Math.sin(item.swayOffset) * item.swayAmplitude;
+          item.rotation += item.rotSpeed;
+
+          // Catch Collision Detection (Very forgiving hitbox)
+          const catchY = this.basket.y + 6;
+          const catchReachY = 28;
+          const catchReachX = (this.basket.width / 2) + 14;
+
+          if (
+            this.isPlaying &&
+            !item.isCaught &&
+            item.y >= catchY - catchReachY &&
+            item.y <= catchY + catchReachY &&
+            Math.abs(item.x - this.basket.x) <= catchReachX
+          ) {
+            item.isCaught = true;
+            this.onCatchItem(item);
+            this.items.splice(i, 1);
+            continue;
+          }
+
+          // Gentle Miss: If item falls past bottom, it simply fades away peacefully
+          if (item.y > this.height + 40) {
+            this.items.splice(i, 1);
+          }
+        }
+
+        // Update Particle Sparks
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+          const p = this.particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.08;
+          p.alpha -= p.decay;
+          if (p.alpha <= 0) {
+            this.particles.splice(i, 1);
+          }
+        }
+
+        // Update Celebration Confetti
+        for (let i = this.confetti.length - 1; i >= 0; i--) {
+          const c = this.confetti[i];
+          c.y += c.vy;
+          c.x += c.vx + Math.sin(c.sway) * 0.6;
+          c.sway += 0.06;
+          c.rot += c.rotSpeed;
+
+          // Recycle confetti during celebration
+          if (c.y > this.height + 20) {
+            if (this.isGameOver) {
+              c.y = -20;
+              c.x = Math.random() * this.width;
+            } else {
+              this.confetti.splice(i, 1);
+            }
+          }
+        }
+
+        // Update Background Floating Ambient Hearts
+        for (const f of this.backgroundFloaters) {
+          f.y -= f.speedY;
+          f.sway += f.swaySpeed;
+          f.x += Math.sin(f.sway) * 0.4;
+          if (f.y < -30) {
+            f.y = this.height + 20;
+            f.x = Math.random() * this.width;
+          }
+        }
+      }
+
+      draw() {
+        this.ctx.clearRect(0, 0, this.width, this.height);
+
+        // 1. Draw gentle ambient background floaters
+        this.drawBackgroundFloaters();
+
+        // 2. Draw Falling Items
+        for (const item of this.items) {
+          this.drawFallingItem(item);
+        }
+
+        // 3. Draw Basket (Player)
+        this.drawBasket();
+
+        // 4. Draw Catch Sparkle Particles
+        for (const p of this.particles) {
+          this.drawParticle(p);
+        }
+
+        // 5. Draw Celebration Confetti
+        for (const c of this.confetti) {
+          this.drawConfettiPiece(c);
+        }
+      }
+
+      drawBackgroundFloaters() {
+        this.ctx.save();
+        for (const f of this.backgroundFloaters) {
+          this.ctx.globalAlpha = f.opacity;
+          if (f.type === 'heart') {
+            this.ctx.fillStyle = '#FFAAA6';
+            this.drawHeartShape(f.x, f.y, f.size);
+          } else {
+            this.ctx.fillStyle = '#FFE5B4';
+            this.drawSparkleShape(f.x, f.y, f.size);
+          }
+        }
+        this.ctx.restore();
+      }
+
+      drawBasket() {
+        const b = this.basket;
+        this.ctx.save();
+        this.ctx.translate(b.x, b.y);
+        this.ctx.rotate(b.tilt);
+        this.ctx.scale(b.bounceScaleX, b.bounceScaleY);
+
+        const w = b.width;
+        const h = b.height;
+
+        // Shadow under the basket
+        this.ctx.beginPath();
+        this.ctx.ellipse(0, h * 0.5 + 4, w * 0.48, 7, 0, 0, Math.PI * 2);
+        this.ctx.fillStyle = 'rgba(231, 76, 111, 0.16)';
+        this.ctx.fill();
+
+        // Basket Woven Body
+        this.ctx.beginPath();
+        this.ctx.moveTo(-w * 0.45, -h * 0.35);
+        this.ctx.lineTo(w * 0.45, -h * 0.35);
+        this.ctx.quadraticCurveTo(w * 0.42, h * 0.45, w * 0.32, h * 0.48);
+        this.ctx.lineTo(-w * 0.32, h * 0.48);
+        this.ctx.quadraticCurveTo(-w * 0.42, h * 0.45, -w * 0.45, -h * 0.35);
+        this.ctx.closePath();
+
+        const basketGrad = this.ctx.createLinearGradient(0, -h * 0.35, 0, h * 0.48);
+        basketGrad.addColorStop(0, '#FCE8CE');
+        basketGrad.addColorStop(0.5, '#F5D3A9');
+        basketGrad.addColorStop(1, '#E6B988');
+        this.ctx.fillStyle = basketGrad;
+        this.ctx.fill();
+
+        this.ctx.lineWidth = 2.2;
+        this.ctx.strokeStyle = '#D9A470';
+        this.ctx.stroke();
+
+        // Subtle weave pattern stripes
+        this.ctx.save();
+        this.ctx.clip();
+        this.ctx.strokeStyle = 'rgba(195, 140, 85, 0.28)';
+        this.ctx.lineWidth = 1.8;
+        for (let x = -w * 0.5; x <= w * 0.5; x += 11) {
+          this.ctx.beginPath();
+          this.ctx.moveTo(x, -h * 0.5);
+          this.ctx.lineTo(x + 12, h * 0.6);
+          this.ctx.stroke();
+
+          this.ctx.beginPath();
+          this.ctx.moveTo(x + 12, -h * 0.5);
+          this.ctx.lineTo(x, h * 0.6);
+          this.ctx.stroke();
+        }
+        this.ctx.restore();
+
+        // Basket Rim
+        this.ctx.beginPath();
+        this.ctx.roundRect(-w * 0.48, -h * 0.42, w * 0.96, h * 0.22, 6);
+        this.ctx.fillStyle = '#FFEED9';
+        this.ctx.fill();
+        this.ctx.strokeStyle = '#D9A470';
+        this.ctx.lineWidth = 2;
+        this.ctx.stroke();
+
+        // Pastel Pink Ribbon & Center Bow
+        this.ctx.fillStyle = '#FF7597';
+        this.ctx.fillRect(-w * 0.46, -h * 0.1, w * 0.92, 5);
+
+        // Cute Bow knot in the center
+        this.ctx.save();
+        this.ctx.translate(0, -h * 0.08);
+
+        // Left bow loop
+        this.ctx.beginPath();
+        this.ctx.ellipse(-7, 0, 8, 5, -0.3, 0, Math.PI * 2);
+        this.ctx.fillStyle = '#FF6584';
+        this.ctx.fill();
+
+        // Right bow loop
+        this.ctx.beginPath();
+        this.ctx.ellipse(7, 0, 8, 5, 0.3, 0, Math.PI * 2);
+        this.ctx.fillStyle = '#FF6584';
+        this.ctx.fill();
+
+        // Center knot
+        this.ctx.beginPath();
+        this.ctx.arc(0, 0, 4.5, 0, Math.PI * 2);
+        this.ctx.fillStyle = '#FFE5EC';
+        this.ctx.fill();
+        this.ctx.restore();
+
+        this.ctx.restore();
+      }
+
+      drawFallingItem(item) {
+        this.ctx.save();
+        this.ctx.translate(item.x, item.y);
+        this.ctx.rotate(item.rotation);
+
+        if (item.type === 'heart_ruby') {
+          this.ctx.fillStyle = '#FF4D6D';
+          this.drawHeartShape(0, 0, item.size);
+          // Highlight shine
+          this.ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+          this.ctx.beginPath();
+          this.ctx.arc(-item.size * 0.22, -item.size * 0.18, item.size * 0.12, 0, Math.PI * 2);
+          this.ctx.fill();
+        } else if (item.type === 'heart_pink') {
+          this.ctx.fillStyle = '#FF8DA1';
+          this.drawHeartShape(0, 0, item.size);
+          this.ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+          this.ctx.beginPath();
+          this.ctx.arc(-item.size * 0.22, -item.size * 0.18, item.size * 0.12, 0, Math.PI * 2);
+          this.ctx.fill();
+        } else if (item.type === 'envelope') {
+          const w = item.size * 1.25;
+          const h = item.size * 0.85;
+
+          // Envelope base
+          this.ctx.fillStyle = '#FFFDF7';
+          this.ctx.strokeStyle = '#F2C894';
+          this.ctx.lineWidth = 1.8;
+          this.ctx.beginPath();
+          this.ctx.roundRect(-w / 2, -h / 2, w, h, 4);
+          this.ctx.fill();
+          this.ctx.stroke();
+
+          // Envelope flap lines
+          this.ctx.beginPath();
+          this.ctx.moveTo(-w / 2, -h / 2);
+          this.ctx.lineTo(0, h * 0.12);
+          this.ctx.lineTo(w / 2, -h / 2);
+          this.ctx.stroke();
+
+          // Cute red heart wax seal
+          this.ctx.fillStyle = '#FF4D6D';
+          this.drawHeartShape(0, h * 0.08, item.size * 0.36);
+        } else if (item.type === 'star') {
+          this.ctx.fillStyle = '#FFD166';
+          this.drawSparkleShape(0, 0, item.size * 1.1);
+        }
+
+        this.ctx.restore();
+      }
+
+      drawHeartShape(x, y, size) {
+        const topY = y - size * 0.35;
+        this.ctx.beginPath();
+        this.ctx.moveTo(x, topY + size * 0.25);
+        this.ctx.bezierCurveTo(x, topY, x - size * 0.5, topY, x - size * 0.5, topY + size * 0.35);
+        this.ctx.bezierCurveTo(x - size * 0.5, topY + size * 0.7, x, topY + size * 0.95, x, y + size * 0.5);
+        this.ctx.bezierCurveTo(x, topY + size * 0.95, x + size * 0.5, topY + size * 0.7, x + size * 0.5, topY + size * 0.35);
+        this.ctx.bezierCurveTo(x + size * 0.5, topY, x, topY, x, topY + size * 0.25);
+        this.ctx.closePath();
+        this.ctx.fill();
+      }
+
+      drawSparkleShape(x, y, size) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(x, y - size);
+        this.ctx.quadraticCurveTo(x, y, x + size, y);
+        this.ctx.quadraticCurveTo(x, y, x, y + size);
+        this.ctx.quadraticCurveTo(x, y, x - size, y);
+        this.ctx.quadraticCurveTo(x, y, x, y - size);
+        this.ctx.closePath();
+        this.ctx.fill();
+      }
+
+      drawParticle(p) {
+        this.ctx.save();
+        this.ctx.globalAlpha = Math.max(0, p.alpha);
+        this.ctx.fillStyle = p.color;
+
+        if (p.isHeart) {
+          this.drawHeartShape(p.x, p.y, p.size * 1.8);
+        } else {
+          this.ctx.beginPath();
+          this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          this.ctx.fill();
+        }
+        this.ctx.restore();
+      }
+
+      drawConfettiPiece(c) {
+        this.ctx.save();
+        this.ctx.translate(c.x, c.y);
+        this.ctx.rotate(c.rot);
+        this.ctx.fillStyle = c.color;
+        this.ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h);
+        this.ctx.restore();
+      }
+
+      loop(timestamp) {
+        const dt = Math.min((timestamp - this.lastTime) / 1000, 0.1);
+        this.lastTime = timestamp;
+
+        this.update(dt);
+        this.draw();
+
+        requestAnimationFrame((t) => this.loop(t));
+      }
+    }
+
+    // Utility: Safe area bottom fallback helper
+    function envSafeAreaBottom() {
+      return 12;
+    }
+
+    // Utility: HTML escaping
+    function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g, tag => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;'
+      }[tag] || tag));
+    }
+
+    // Boot up when DOM is ready
+    window.addEventListener('DOMContentLoaded', () => {
+      window.game = new Game();
+    });
+  </script>
+</body>
+</html>
